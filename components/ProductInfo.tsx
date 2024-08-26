@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import HeartFavorite from "./HeartFavorite";
-import { MinusCircle, PlusCircle } from "lucide-react";
 
 import useCart from "@/lib/hooks/useCart";
 
@@ -13,7 +12,6 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState<string>(
     productInfo.sizes[0]
   );
-  const [quantity, setQuantity] = useState<number>(1);
 
   const cart = useCart();
 
@@ -76,16 +74,9 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 
       <div className="flex flex-col gap-2">
         <p className="text-base-medium text-grey-2">Quantity:</p>
+        {/* Fixed the quantity to 1 */}
         <div className="flex gap-4 items-center">
-          <MinusCircle
-            className="hover:text-red-1 cursor-pointer"
-            onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-          />
-          <p className="text-body-bold">{quantity}</p>
-          <PlusCircle
-            className="hover:text-red-1 cursor-pointer"
-            onClick={() => setQuantity(quantity + 1)}
-          />
+          <p className="text-body-bold">1</p>
         </div>
       </div>
 
@@ -94,7 +85,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
         onClick={() => {
           cart.addItem({
             item: productInfo,
-            quantity,
+            quantity: 1, // Quantity is fixed to 1
             color: selectedColor,
             size: selectedSize,
           });
@@ -107,3 +98,4 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 };
 
 export default ProductInfo;
+
