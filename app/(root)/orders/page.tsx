@@ -3,24 +3,32 @@ import { auth } from "@clerk/nextjs";
 import Image from "next/image";
 
 const Orders = async () => {
-  const { userId } = auth();
-  const orders = await getOrders(userId as string);
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
 
-  if (orders && orders.length > 0 && orders[0].products) {
-    console.log(orders[0].products);
-  } else {
-    console.log('No products found in the first order or no orders available.');
-  }
+    const orders = await getOrders(userId as string);
 
-  return (
-    <div className="px-10 py-5 max-sm:px-3">
-      <p className="text-heading3-bold my-10">Your Orders</p>
-      {!orders || (orders.length === 0 ? (
-        <p className="text-body-bold my-5">You have no orders yet.</p>
-      ) : (
+    if (!orders || orders.length === 0) {
+      return (
+        <div className="px-10 py-5 max-sm:px-3">
+          <p className="text-heading3-bold my-10">Your Orders</p>
+          <p className="text-body-bold my-5">You have no orders yet.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="px-10 py-5 max-sm:px-3">
+        <p className="text-heading3-bold my-10">Your Orders</p>
         <div className="flex flex-col gap-10">
           {orders.map((order: any) => (
-            <div className="flex flex-col gap-8 p-4 hover:bg-grey-1">
+            <div
+              key={order._id}
+              className="flex flex-col gap-8 p-4 hover:bg-grey-1"
+            >
               <div className="flex gap-20 max-md:flex-col max-md:gap-3">
                 <p className="text-base-bold">Order ID: {order._id}</p>
                 <p className="text-base-bold">
@@ -30,7 +38,7 @@ const Orders = async () => {
 
               <div className="flex flex-col gap-5">
                 {order.products.map((orderItem: any) => (
-                  <div className="flex gap-4">
+                  <div key={orderItem.product._id} className="flex gap-4">
                     <Image
                       src={orderItem.product.media[0]}
                       alt={orderItem.product.title}
@@ -63,11 +71,15 @@ const Orders = async () => {
                       )}
                       <p className="text-small-medium">
                         Unit price:{" "}
-                        <span className="text-small-bold">{orderItem.product.price}</span>
+                        <span className="text-small-bold">
+                          {orderItem.product.price}
+                        </span>
                       </p>
                       <p className="text-small-medium">
                         Quantity:{" "}
-                        <span className="text-small-bold">{orderItem.quantity}</span>
+                        <span className="text-small-bold">
+                          {orderItem.quantity}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -76,9 +88,19 @@ const Orders = async () => {
             </div>
           ))}
         </div>
-      ))}
-    </div>
-  );
+      </div>
+    );
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+    return (
+      <div className="px-10 py-5 max-sm:px-3">
+        <p className="text-heading3-bold my-10">Your Orders</p>
+        <p className="text-body-bold my-5">
+          An error occurred while fetching your orders. Please try again later.
+        </p>
+      </div>
+    );
+  }
 };
 
 export default Orders;
