@@ -95,9 +95,7 @@ const Orders = async () => {
     return (
       <div className="px-10 py-5 max-sm:px-3">
         <p className="text-heading3-bold my-10">Your Orders</p>
-        <p className="text-body-bold my-5">
-          An error occurred while fetching your orders. Please try again later.
-        </p>
+        <p> An error occurred while fetching your orders. Please try again later.</p>
       </div>
     );
   }
